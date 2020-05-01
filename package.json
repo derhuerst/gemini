@@ -1,0 +1,29 @@
+{
+	"name": "@derhuerst/gemini",
+	"description": "An experimental Gemini server.",
+	"version": "1.0.0",
+	"main": "index.js",
+	"files": [
+		"index.js",
+		"example.js"
+	],
+	"keywords": [
+		"gemini",
+		"protocol",
+		"server"
+	],
+	"author": "Jannis R <mail@jannisr.de>",
+	"homepage": "https://github.com/derhuerst/todo-name",
+	"repository": "derhuerst/todo-name",
+	"bugs": "https://github.com/derhuerst/todo-name/issues",
+	"license": "ISC",
+	"engines": {
+		"node": ">=12"
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+	},
+	"scripts": {
+	}
+}
