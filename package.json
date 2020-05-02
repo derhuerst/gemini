@@ -1,11 +1,12 @@
 {
 	"name": "@derhuerst/gemini",
-	"description": "An experimental Gemini server.",
+	"description": "Experimental Gemini server & client.",
 	"version": "1.0.0",
 	"main": "index.js",
 	"files": [
 		"index.js",
 		"server.js",
+		"client.js",
 		"lib",
 		"examples"
 	],

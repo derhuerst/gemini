@@ -4,7 +4,10 @@ const {createServer: createTlsServer} = require('tls')
 const {EventEmitter} = require('events')
 const createParser = require('./lib/request-parser')
 const createResponse = require('./lib/response')
-const {ALPN_ID} = require('./lib/util')
+const {
+	ALPN_ID,
+	MIN_TLS_VERSION,
+} = require('./lib/util')
 
 const createGeminiServer = (opt = {}, onRequest) => {
 	if (typeof opt === 'function') {
@@ -59,10 +62,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 
 	const server = createTlsServer({
 		ALPNProtocols: [ALPN_ID],
-		// https://gemini.circumlunar.space/docs/spec-spec.txt, 1.4.1
-		// > Servers MUST use TLS version 1.2 or higher and SHOULD use TLS version
-		// > 1.3 or higher.
-		minVersion: 'TLSv1.2',
+		minVersion: MIN_TLS_VERSION,
 		requestCert: !!alwaysRequireClientCert,
 		// > Gemini requests typically will be made without a client
 		// > certificate being sent to the server. If a requested resource
