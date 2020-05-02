@@ -7,7 +7,13 @@ const {
 } = require('..')
 
 const onRequest = (req, res) => {
+	console.log('request', req.url)
+	if (req.clientFingerprint) console.log('client fingerprint:', req.clientFingerprint)
+
 	if (req.path === '/foo') {
+		if (!req.clientFingerprint) {
+			return res.requestTransientClientCert('/foo is secret!')
+		}
 		res.write('foo')
 		res.end('!')
 	} else if (req.path === '/bar') {

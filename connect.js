@@ -15,10 +15,12 @@ const connectToGeminiServer = (opt, cb) => {
 	const {
 		hostname,
 		port,
+		cert, key, passphrase,
 		tlsOpt,
 	} = {
 		hostname: '127.0.0.1',
 		port: DEFAULT_PORT,
+		cert: null, key: null, passphrase: null,
 		tlsOpt: {},
 		// todo: TOFU via isTrustedCertificate()
 		...opt,
@@ -28,7 +30,7 @@ const connectToGeminiServer = (opt, cb) => {
 		ALPNProtocols: [ALPN_ID],
 		minVersion: MIN_TLS_VERSION,
 		hostname, port,
-		// todo: cert, key, passphrase
+		cert, key, passphrase,
 		...tlsOpt,
 	})
 

@@ -22,6 +22,18 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	}
 
 	const onConnection = (socket) => {
+		if (
+			socket.authorizationError &&
+			// allow self-signed certs
+			socket.authorizationError !== 'SELF_SIGNED_CERT_IN_CHAIN' &&
+			socket.authorizationError !== 'DEPTH_ZERO_SELF_SIGNED_CERT' &&
+			socket.authorizationError !== 'UNABLE_TO_GET_ISSUER_CERT'
+		) {
+			socket.destroy(new Error(socket.authorizationError))
+			return;
+		}
+		const clientCert = socket.getPeerCertificate()
+
 		const req = createParser()
 		socket.pipe(req)
 		socket.once('error', (err) => {
@@ -43,6 +55,9 @@ const createGeminiServer = (opt = {}, onRequest) => {
 			req.url = header.url
 			const url = new URL(header.url, 'http://foo/')
 			req.path = url.pathname
+			if (clientCert && clientCert.fingerprint) {
+				req.clientFingerprint = clientCert.fingerprint
+			}
 			// todo: req.abort(), req.destroy()
 
 			// prepare res
@@ -63,7 +78,19 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	const server = createTlsServer({
 		ALPNProtocols: [ALPN_ID],
 		minVersion: MIN_TLS_VERSION,
-		requestCert: !!alwaysRequireClientCert,
+		// > Usually the server specifies in the Server Hello message if a
+		// > client certificate is needed/wanted.
+		// > Does anybody know if it is possible to perform an authentication
+		// > via client cert if the server does not request it?
+		//
+		// > The client won't send a certificate unless the server asks for it
+		// > with a `Certificate Request` message (see the standard, section
+		// > 7.4.4). If the server does not ask for a certificate, the sending
+		// > of a `Certificate` and a `CertificateVerify` message from the
+		// > client is likely to imply an immediate termination from the server
+		// > (with an unexpected_message alert).
+		// https://security.stackexchange.com/a/36101
+		requestCert: true,
 		// > Gemini requests typically will be made without a client
 		// > certificate being sent to the server. If a requested resource
 		// > is part of a server-side application which requires persistent

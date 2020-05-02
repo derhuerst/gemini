@@ -24,6 +24,8 @@
 		"node": ">=12"
 	},
 	"dependencies": {
+		"async": "^3.2.0",
+		"pem": "^1.14.4"
 	},
 	"devDependencies": {
 		"create-cert": "^1.0.6"
