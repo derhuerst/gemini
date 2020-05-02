@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"files": [
 		"index.js",
+		"server.js",
 		"lib",
-		"example.js"
+		"examples"
 	],
 	"keywords": [
 		"gemini",
@@ -24,6 +25,7 @@
 	"dependencies": {
 	},
 	"devDependencies": {
+		"create-cert": "^1.0.6"
 	},
 	"scripts": {
 	}
