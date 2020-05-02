@@ -1,16 +1,14 @@
 'use strict'
 
-const {
-	request,
-	DEFAULT_PORT,
-} = require('..')
+const {request} = require('..')
 
 const onError = (err) => {
 	console.error(err)
 	process.exit(1)
 }
 
-request('/foo', {
+request('/bar', {
+	followRedirects: true,
 	tlsOpt: {
 		rejectUnauthorized: false,
 	},

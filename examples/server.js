@@ -8,8 +8,10 @@ const {
 
 const onRequest = (req, res) => {
 	if (req.path === '/foo') {
-		res.write('foo,')
-		res.end('bar')
+		res.write('foo')
+		res.end('!')
+	} else if (req.path === '/bar') {
+		res.redirect('/foo')
 	} else {
 		res.gone()
 	}
