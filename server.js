@@ -15,8 +15,10 @@ const createGeminiServer = (opt = {}, onRequest) => {
 		opt = {}
 	}
 	const {
+		cert, key, passphrase,
 		tlsOpt,
 	} = {
+		cert: null, key: null, passphrase: null,
 		tlsOpt: {},
 		...opt,
 	}
@@ -103,6 +105,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 		// the request with a "transient certificate" to initiate a client
 		// > certificate section.
 		rejectUnauthorized: false,
+		cert, key, passphrase,
 		...tlsOpt,
 	}, onConnection)
 

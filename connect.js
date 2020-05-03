@@ -22,7 +22,6 @@ const connectToGeminiServer = (opt, cb) => {
 		port: DEFAULT_PORT,
 		cert: null, key: null, passphrase: null,
 		tlsOpt: {},
-		// todo: TOFU via isTrustedCertificate()
 		...opt,
 	}
 

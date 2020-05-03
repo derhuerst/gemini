@@ -34,7 +34,7 @@ createCert('example.org')
 		tlsOpt: keys,
 		// todo: SNICallback
 	}, onRequest)
-	server.on('error', onError)
+	server.on('error', console.error)
 
 	server.listen(DEFAULT_PORT, (err) => {
 		if (err) return onError(err)
