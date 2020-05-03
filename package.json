@@ -1,14 +1,16 @@
 {
 	"name": "@derhuerst/gemini",
 	"description": "Experimental Gemini server & client.",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"main": "index.js",
 	"files": [
 		"index.js",
 		"server.js",
 		"client.js",
+		"connect.js",
 		"lib",
-		"examples"
+		"examples",
+		"test.js"
 	],
 	"keywords": [
 		"gemini",
