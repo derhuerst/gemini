@@ -1,9 +1,8 @@
 'use strict'
 
-const pem = require('pem')
+const debug = require('debug')('client')
 const {parse: parseUrl} = require('url')
-const whilst = require('async/whilst')
-const waterfall = require('async/waterfall')
+const pem = require('pem')
 const connect = require('./connect')
 const createParser = require('./lib/response-parser')
 const {
@@ -15,6 +14,8 @@ const {CODES, MESSAGES} = require('./lib/statuses')
 const HOUR = 60 * 60 * 1000
 
 const _request = (pathOrUrl, opt, cb) => {
+	debug('_request', pathOrUrl, opt)
+
 	connect(opt, (err, socket) => {
 		if (err) return cb(err)
 
@@ -105,12 +106,12 @@ const errFromStatusCode = (res, msg = null) => {
 	return err
 }
 
-const sendGeminiRequest = (pathOrUrl, opt, cb) => {
+const sendGeminiRequest = (pathOrUrl, opt, done) => {
 	if (typeof pathOrUrl !== 'string' || !pathOrUrl) {
 		throw new Error('pathOrUrl must be a string & not empty')
 	}
 	if (typeof opt === 'function') {
-		cb = opt
+		done = opt
 		opt = {}
 	}
 	const {
@@ -136,42 +137,6 @@ const sendGeminiRequest = (pathOrUrl, opt, cb) => {
 		...opt,
 	}
 
-	const target = parseUrl(pathOrUrl)
-	const hostname = target.hostname || 'localhost'
-	const port = target.port || DEFAULT_PORT
-	const reqOpt = {
-		hostname, port,
-		tlsOpt,
-	}
-
-	const chain = [
-		cb => _request(pathOrUrl, reqOpt, cb),
-	]
-
-	if (followRedirects) {
-		// todo: prevent endless redirects
-		const followRedirects = (res, cb) => {
-			const checkRedirect = cb => cb(null, (
-				res.statusCode === CODES.REDIRECT_TEMPORARY ||
-				res.statusCode === CODES.REDIRECT_PERMANENT
-			))
-			const followRedirect = (cb) => {
-				const newTarget = parseUrl(res.meta)
-				_request(res.meta, {
-					...reqOpt,
-					host: newTarget.hostname || hostname,
-					port: newTarget.port || port,
-				}, (err, newRes) => {
-					if (err) return cb(err)
-					res = newRes
-					cb(null, res)
-				})
-			}
-			whilst(checkRedirect, followRedirect, cb)
-		}
-		chain.push(followRedirects)
-	}
-
 	if (useClientCerts) {
 		if (typeof letUserConfirmClientCertUsage !== 'function') {
 			throw new Error('letUserConfirmClientCertUsage must be a function')
@@ -183,38 +148,64 @@ const sendGeminiRequest = (pathOrUrl, opt, cb) => {
 		if (typeof clientCertStore.delete !== 'function') {
 			throw new Error('clientCertStore.delete must be a function')
 		}
+	}
 
-		const handleClientAuth = (res, cb) => {
-			// report server-sent errors
-			// > The contents of <META> may provide additional information
-			// > on certificate requirements or the reason a certificate
-			// > was rejected.
-			const reason = res.meta
-			if (
-				res.statusCode === CODES.CERTIFICATE_NOT_ACCEPTED ||
-				res.statusCode === CODES.FUTURE_CERT_REJECTED ||
-				res.statusCode === CODES.EXPIRED_CERT_REJECTED
-			) return cb(errFromStatusCode(res, reason))
+	const target = parseUrl(pathOrUrl)
+	let reqOpt = {
+		hostname: target.hostname || 'localhost',
+		port: target.port || DEFAULT_PORT,
+		tlsOpt,
+	}
 
-			if (
-				res.statusCode !== CODES.CLIENT_CERT_REQUIRED &&
-				res.statusCode !== CODES.TRANSIENT_CERT_REQUESTED &&
-				res.statusCode !== CODES.AUTHORISED_CERT_REQUIRED
-			) return cb(null, res)
+	let cb = (err, res) => {
+		if (err) return done(err)
 
-			// handle server-sent client cert prompt
+		// handle redirect
+		if (followRedirects && (
+			res.statusCode === CODES.REDIRECT_TEMPORARY ||
+			res.statusCode === CODES.REDIRECT_PERMANENT
+		)) {
+			// todo: handle empty res.meta
+			const newTarget = parseUrl(res.meta)
+			reqOpt = {
+				...reqOpt,
+				hostname: newTarget.hostname || reqOpt.hostname,
+				port: newTarget.port || reqOpt.port,
+			}
+			pathOrUrl = res.meta
+			_request(res.meta, reqOpt, cb)
+			return;
+		}
+
+		// report server-sent errors
+		// > The contents of <META> may provide additional information
+		// > on certificate requirements or the reason a certificate
+		// > was rejected.
+		if (
+			res.statusCode === CODES.CERTIFICATE_NOT_ACCEPTED ||
+			res.statusCode === CODES.FUTURE_CERT_REJECTED ||
+			res.statusCode === CODES.EXPIRED_CERT_REJECTED
+		) return done(errFromStatusCode(res, res.meta))
+
+		// handle server-sent client cert prompt
+		if (
+			res.statusCode === CODES.CLIENT_CERT_REQUIRED ||
+			res.statusCode === CODES.TRANSIENT_CERT_REQUESTED ||
+			res.statusCode === CODES.AUTHORISED_CERT_REQUIRED
+		) {
+			const origin = reqOpt.hostname + ':' + reqOpt.port
 			letUserConfirmClientCertUsage({
-				host: hostname + ':' + port,
-				reason,
+				host: origin,
+				reason: res.meta,
 			}, (confirmed) => {
 				if (confirmed !== true) {
 					const err = new Error('server request client cert, but user rejected')
 					err.res = res
-					return cb(err)
+					return done(err)
 				}
 
-				clientCertStore.get(hostname + ':' + port, (err, {cert, key}) => {
-					if (err) return cb(err)
+				clientCertStore.get(origin, (err, {cert, key}) => {
+					if (err) return done(err)
 
 					_request(pathOrUrl, {
 						...reqOpt,
@@ -222,13 +213,13 @@ const sendGeminiRequest = (pathOrUrl, opt, cb) => {
 					}, cb)
 				})
 			})
+			return;
 		}
-		chain.push(handleClientAuth)
+
+		done(null, res)
 	}
 
-	// redirects after server-sent client cert requests don't work yet
-	// todo: run chain in a loop
-	waterfall(chain, cb)
+	_request(pathOrUrl, reqOpt, cb)
 }
 
 module.exports = sendGeminiRequest
