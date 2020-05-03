@@ -22,6 +22,11 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	}
 
 	const onConnection = (socket) => {
+		// todo: clarify if this is desired behavior
+		if (socket.alpnProtocol !== ALPN_ID) {
+			socket.destroy()
+			return;
+		}
 		if (
 			socket.authorizationError &&
 			// allow self-signed certs
