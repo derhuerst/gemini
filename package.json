@@ -28,8 +28,11 @@
 		"pem": "^1.14.4"
 	},
 	"devDependencies": {
-		"create-cert": "^1.0.6"
+		"create-cert": "^1.0.6",
+		"get-stream": "^5.1.0"
 	},
 	"scripts": {
+		"test": "node test.js",
+		"prepublishOnly": "npm run test"
 	}
 }
