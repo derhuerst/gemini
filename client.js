@@ -16,10 +16,17 @@ const HOUR = 60 * 60 * 1000
 const _request = (pathOrUrl, opt, cb) => {
 	debug('_request', pathOrUrl, opt)
 
+	const {
+		verifyAlpnId,
+	} = {
+		verifyAlpnId: alpnId => alpnId === ALPN_ID,
+		...opt,
+	}
+
 	connect(opt, (err, socket) => {
 		if (err) return cb(err)
 
-		if (socket.alpnProtocol !== ALPN_ID) {
+		if (verifyAlpnId(socket.alpnProtocol) !== true) {
 			socket.destroy()
 			return cb(new Error('invalid or missing ALPN protocol'))
 		}
