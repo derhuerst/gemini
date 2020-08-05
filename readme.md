@@ -1,6 +1,6 @@
 # gemini
 
-**Experimental [Gemini](https://gemini.circumlunar.space) server & client.**
+**[Gemini protocol](https://gemini.circumlunar.space) server & client.**
 
 [![npm version](https://img.shields.io/npm/v/@derhuerst/gemini.svg)](https://www.npmjs.com/package/@derhuerst/gemini)
 [![build status](https://api.travis-ci.org/derhuerst/gemini.svg?branch=master)](https://travis-ci.org/derhuerst/gemini)
