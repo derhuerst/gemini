@@ -19,7 +19,7 @@ const _request = (pathOrUrl, opt, cb) => {
 	const {
 		verifyAlpnId,
 	} = {
-		verifyAlpnId: alpnId => alpnId === ALPN_ID,
+		verifyAlpnId: alpnId => alpnId ? (alpnId === ALPN_ID) : true,
 		...opt,
 	}
 
@@ -163,8 +163,9 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		hostname: target.hostname || 'localhost',
 		port: target.port || DEFAULT_PORT,
 		tlsOpt,
-		verifyAlpnId,
 	}
+
+	if (verifyAlpnId) reqOpt.verifyAlpnId = verifyAlpnId
 
 	let cb = (err, res) => {
 		if (err) return done(err)
