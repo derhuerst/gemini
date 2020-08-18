@@ -59,7 +59,7 @@ const _request = (pathOrUrl, opt, cb) => {
 		})
 
 		// send request
-		socket.end(encodeURI(pathOrUrl) + ' \r\n')
+		socket.end(pathOrUrl + '\r\n')
 	})
 }
 
@@ -127,6 +127,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		letUserConfirmClientCertUsage,
 		clientCertStore,
 		tlsOpt,
+		verifyAlpnId,
 	} = {
 		followRedirects: false,
 		// https://gemini.circumlunar.space/docs/spec-spec.txt, 1.4.3
@@ -162,6 +163,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		hostname: target.hostname || 'localhost',
 		port: target.port || DEFAULT_PORT,
 		tlsOpt,
+		verifyAlpnId,
 	}
 
 	let cb = (err, res) => {
