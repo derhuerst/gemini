@@ -26,16 +26,7 @@ The following code assumes that you have a valid SSL certificate & key.
 ```js
 const {createServer, DEFAULT_PORT} = require('@derhuerst/gemini')
 
-const onError = (err) => {
-	console.error(err)
-	process.exit(1)
-}
-
-const server = createGeminiServer({
-	cert: …, // certificate (+ chain)
-	key: …, // private key
-	passphrase: …, // passphrase, if the key is encrypted
-}, (req, res) => {
+const handleRequest = (req, res) => {
 	if (req.path === '/foo') {
 		if (!req.clientFingerprint) {
 			return res.requestTransientClientCert('/foo is secret!')
@@ -47,7 +38,13 @@ const server = createGeminiServer({
 	} else {
 		res.gone()
 	}
-})
+}
+
+const server = createGeminiServer({
+	cert: …, // certificate (+ chain)
+	key: …, // private key
+	passphrase: …, // passphrase, if the key is encrypted
+}, handleRequest)
 
 server.listen(DEFAULT_PORT)
 server.on('error', console.error)
