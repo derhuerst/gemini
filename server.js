@@ -21,7 +21,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	} = {
 		cert: null, key: null, passphrase: null,
 		tlsOpt: {},
-		verifyAlpnId: alpnId => alpnId === ALPN_ID,
+		verifyAlpnId: alpnId => alpnId ? alpnId === ALPN_ID : true,
 		...opt,
 	}
 
@@ -85,7 +85,9 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	}
 
 	const server = createTlsServer({
-		ALPNProtocols: [ALPN_ID],
+		// Disabled ALPNProtocols to mitigate connection issues in gemini
+		// clients as reported in #5
+		// ALPNProtocols: [ALPN_ID],
 		minVersion: MIN_TLS_VERSION,
 		// > Usually the server specifies in the Server Hello message if a
 		// > client certificate is needed/wanted.
