@@ -1,5 +1,6 @@
 'use strict'
 
+const debug = require('debug')('gemini:server')
 const {createServer: createTlsServer} = require('tls')
 const {EventEmitter} = require('events')
 const createParser = require('./lib/request-parser')
@@ -26,8 +27,11 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	}
 
 	const onConnection = (socket) => {
+		debug('connection', socket)
+
 		// todo: clarify if this is desired behavior
 		if (verifyAlpnId(socket.alpnProtocol) !== true) {
+			debug('invalid ALPN ID, closing socket')
 			socket.destroy()
 			return;
 		}
@@ -38,6 +42,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 			socket.authorizationError !== 'DEPTH_ZERO_SELF_SIGNED_CERT' &&
 			socket.authorizationError !== 'UNABLE_TO_GET_ISSUER_CERT'
 		) {
+			debug('authorization error, closing socket')
 			socket.destroy(new Error(socket.authorizationError))
 			return;
 		}
@@ -58,6 +63,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 
 		req.once('header', (header) => {
 			clearTimeout(timeout)
+			debug('received header', header)
 
 			// prepare req
 			req.socket = socket

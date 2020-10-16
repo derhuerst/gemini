@@ -1,6 +1,6 @@
 'use strict'
 
-const debug = require('debug')('client')
+const debug = require('debug')('gemini:client')
 const {parse: parseUrl} = require('url')
 const pem = require('pem')
 const connect = require('./connect')
@@ -25,6 +25,7 @@ const _request = (pathOrUrl, opt, cb) => {
 
 	connect(opt, (err, socket) => {
 		if (err) return cb(err)
+		debug('connection', socket)
 
 		if (verifyAlpnId(socket.alpnProtocol) !== true) {
 			socket.destroy()
@@ -46,6 +47,7 @@ const _request = (pathOrUrl, opt, cb) => {
 
 		res.once('header', (header) => {
 			clearTimeout(timeout)
+			debug('received header', header)
 
 			// prepare res
 			res.socket = socket
