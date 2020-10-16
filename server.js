@@ -3,6 +3,7 @@
 const debug = require('debug')('gemini:server')
 const {createServer: createTlsServer} = require('tls')
 const {EventEmitter} = require('events')
+const {pipeline: pipe} = require('stream')
 const createParser = require('./lib/request-parser')
 const createResponse = require('./lib/response')
 const {
@@ -49,20 +50,26 @@ const createGeminiServer = (opt = {}, onRequest) => {
 		const clientCert = socket.getPeerCertificate()
 
 		const req = createParser()
-		socket.pipe(req)
-		socket.once('error', (err) => {
-			socket.unpipe(req)
-			req.destroy(err)
-		})
+		pipe(
+			socket,
+			req,
+			(err) => {
+				if (err) debug('error receiving request', err)
+				if (timeout && err) {
+					debug('socket closed while waiting for header')
+				}
+				// todo? https://nodejs.org/api/http.html#http_event_clienterror
+			},
+		)
 
-		const close = () => {
-			socket.destroy()
-			req.destroy()
+		const reportTimeout = () => {
+			socket.destroy(new Error('timeout waiting for header'))
 		}
-		let timeout = setTimeout(close, 20 * 1000)
+		let timeout = setTimeout(reportTimeout, 20 * 1000)
 
 		req.once('header', (header) => {
 			clearTimeout(timeout)
+			timeout = null
 			debug('received header', header)
 
 			// prepare req
@@ -77,13 +84,15 @@ const createGeminiServer = (opt = {}, onRequest) => {
 
 			// prepare res
 			const res = createResponse()
-			res.pipe(socket)
-			res.once('error', (err) => {
-				console.error('error', err)
-				res.unpipe(socket)
-				socket.destroy(err)
-			})
 			Object.defineProperty(res, 'socket', {value: socket})
+
+			pipe(
+				res,
+				socket,
+				(err) => {
+					if (err) debug('error sending response', err)
+				},
+			)
 
 			onRequest(req, res)
 			server.emit('request', req, res)

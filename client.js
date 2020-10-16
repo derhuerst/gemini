@@ -3,6 +3,7 @@
 const debug = require('debug')('gemini:client')
 const {parse: parseUrl} = require('url')
 const pem = require('pem')
+const {pipeline: pipe} = require('stream')
 const connect = require('./connect')
 const createParser = require('./lib/response-parser')
 const {
@@ -33,20 +34,26 @@ const _request = (pathOrUrl, opt, cb) => {
 		}
 
 		const res = createParser()
-		socket.pipe(res)
-		socket.once('error', (err) => {
-			socket.unpipe(res)
-			res.destroy(err)
-		})
+		pipe(
+			socket,
+			res,
+			(err) => {
+				if (err) debug('error receiving response', err)
+				// Control over the socket has been given to the caller
+				// already, so we swallow the error here.
+				if (!timeout) return;
+				if (!err) cb(new Error('socket closed while waiting for header'))
+			},
+		)
 
-		const close = () => {
-			socket.destroy()
-			res.destroy()
+		const reportTimeout = () => {
+			socket.destroy(new Error('timeout waiting for header'))
 		}
-		let timeout = setTimeout(close, 20 * 1000)
+		let timeout = setTimeout(reportTimeout, 20 * 1000)
 
 		res.once('header', (header) => {
 			clearTimeout(timeout)
+			timeout = null
 			debug('received header', header)
 
 			// prepare res
