@@ -99,6 +99,8 @@ request('/foo', {
 
 ## API
 
+### `createServer`
+
 ```js
 const createServer = require('@derhuerst/gemini/server')
 createServer(opt = {}, onRequest)
@@ -115,7 +117,7 @@ createServer(opt = {}, onRequest)
 }
 ```
 
----
+### `request`
 
 ```js
 const request = require('@derhuerst/gemini/client')
@@ -137,7 +139,7 @@ request(pathOrUrl, opt = {}, cb)
 }
 ```
 
----
+### `connect`
 
 ```js
 const connect = require('@derhuerst/gemini/connect')
@@ -156,6 +158,11 @@ connect(opt = {}, cb)
 	tlsOpt: {},
 }
 ```
+
+
+## Related
+
+- [`gemini-fetch`](https://github.com/RangerMauve/gemini-fetch) – Load data from the Gemini protocol the way you would fetch from HTTP in JavaScript
 
 
 ## Contributing
