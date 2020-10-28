@@ -14,8 +14,8 @@ const {CODES, MESSAGES} = require('./lib/statuses')
 
 const HOUR = 60 * 60 * 1000
 
-const _request = (pathOrUrl, opt, cb) => {
-	debug('_request', pathOrUrl, opt)
+const _request = (pathOrUrl, opt, ctx, cb) => {
+	debug('_request', pathOrUrl, ctx, opt)
 
 	const {
 		verifyAlpnId,
@@ -154,6 +154,10 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		...opt,
 	}
 
+	const shouldFollowRedirect = 'function' === typeof followRedirects
+		? followRedirects
+		: () => followRedirects
+
 	if (useClientCerts) {
 		if (typeof letUserConfirmClientCertUsage !== 'function') {
 			throw new Error('letUserConfirmClientCertUsage must be a function')
@@ -176,14 +180,24 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 
 	if (verifyAlpnId) reqOpt.verifyAlpnId = verifyAlpnId
 
+	let ctx = {
+		redirectsFollowed: 0,
+	}
+
 	let cb = (err, res) => {
 		if (err) return done(err)
 
 		// handle redirect
-		if (followRedirects && (
+		if ((
 			res.statusCode === CODES.REDIRECT_TEMPORARY ||
 			res.statusCode === CODES.REDIRECT_PERMANENT
-		)) {
+		) && shouldFollowRedirect(ctx.redirectsFollowed + 1, res)) {
+			ctx = {
+				...ctx,
+				redirectsFollowed: ctx.redirectsFollowed + 1
+			}
+			debug('following redirect nr', ctx.redirectsFollowed)
+
 			// todo: handle empty res.meta
 			const newTarget = parseUrl(res.meta)
 			reqOpt = {
@@ -192,7 +206,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 				port: newTarget.port || reqOpt.port,
 			}
 			pathOrUrl = res.meta
-			_request(res.meta, reqOpt, cb)
+			_request(res.meta, reqOpt, ctx, cb)
 			return;
 		}
 
@@ -229,7 +243,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 					_request(pathOrUrl, {
 						...reqOpt,
 						cert, key,
-					}, cb)
+					}, ctx, cb)
 				})
 			})
 			return;
@@ -238,7 +252,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		done(null, res)
 	}
 
-	_request(pathOrUrl, reqOpt, cb)
+	_request(pathOrUrl, reqOpt, ctx, cb)
 }
 
 module.exports = sendGeminiRequest

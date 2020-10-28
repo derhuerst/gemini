@@ -129,6 +129,7 @@ request(pathOrUrl, opt = {}, cb)
 ```js
 {
 	// follow redirects automatically
+	// Can also be a function `(nrOfRedirects, response) => boolean`.
 	followRedirects: false,
 	// client certificates
 	useClientCerts: false,
