@@ -6,8 +6,8 @@
 [![build status](https://api.travis-ci.org/derhuerst/gemini.svg?branch=master)](https://travis-ci.org/derhuerst/gemini)
 ![ISC-licensed](https://img.shields.io/github/license/derhuerst/gemini.svg)
 ![minimum Node.js version](https://img.shields.io/node/v/@derhuerst/gemini.svg)
-[![chat with me on Gitter](https://img.shields.io/badge/chat%20with%20me-on%20gitter-512e92.svg)](https://gitter.im/derhuerst)
-[![support me on Patreon](https://img.shields.io/badge/support%20me-on%20patreon-fa7664.svg)](https://patreon.com/derhuerst)
+[![support me via GitHub Sponsors](https://img.shields.io/badge/support%20me-donate-fa7664.svg)](https://github.com/sponsors/derhuerst)
+[![chat with me on Twitter](https://img.shields.io/badge/chat%20with%20me-on%20Twitter-1da1f2.svg)](https://twitter.com/derhuerst)
 
 
 ## Installation
@@ -164,6 +164,7 @@ connect(opt = {}, cb)
 ## Related
 
 - [`gemini-fetch`](https://github.com/RangerMauve/gemini-fetch) – Load data from the Gemini protocol the way you would fetch from HTTP in JavaScript
+- [`dioscuri`](https://github.com/wooorm/dioscuri) – A gemtext (`text/gemini`) parser with support for streaming, ASTs, and CSTs
 
 
 ## Contributing
