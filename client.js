@@ -135,6 +135,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		useClientCerts,
 		letUserConfirmClientCertUsage,
 		clientCertStore,
+		connectTimeout,
 		tlsOpt,
 		verifyAlpnId,
 	} = {
@@ -150,6 +151,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		useClientCerts: false,
 		letUserConfirmClientCertUsage: null,
 		clientCertStore: defaultClientCertStore,
+		connectTimeout: 60 * 1000, // 60s
 		tlsOpt: {},
 		...opt,
 	}
@@ -175,6 +177,7 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 	let reqOpt = {
 		hostname: target.hostname || 'localhost',
 		port: target.port || DEFAULT_PORT,
+		connectTimeout,
 		tlsOpt,
 	}
 

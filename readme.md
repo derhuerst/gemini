@@ -135,6 +135,8 @@ request(pathOrUrl, opt = {}, cb)
 	useClientCerts: false,
 	letUserConfirmClientCertUsage: null,
 	clientCertStore: defaultClientCertStore,
+	// time to wait for socket connection & TLS handshake
+	connectTimeout: 60 * 1000, // 60s
 	// additional options to be passed into `tls.connect`
 	tlsOpt: {},
 }
@@ -155,6 +157,8 @@ connect(opt = {}, cb)
 	port: 1965,
 	// client certificate
 	cert: null, key: null, passphrase: null,
+	// time to wait for socket connection & TLS handshake
+	connectTimeout: 60 * 1000, // 60s
 	// additional options to be passed into `tls.connect`
 	tlsOpt: {},
 }
