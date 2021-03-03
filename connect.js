@@ -1,5 +1,6 @@
 'use strict'
 
+const debug = require('debug')('gemini:connect')
 const {connect: connectTls} = require('tls')
 const {
 	DEFAULT_PORT,
@@ -12,6 +13,7 @@ const connectToGeminiServer = (opt, cb) => {
 		cb = opt
 		opt = {}
 	}
+	debug('connectToGeminiServer', opt)
 	const {
 		hostname,
 		port,

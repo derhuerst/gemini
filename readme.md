@@ -114,6 +114,9 @@ createServer(opt = {}, onRequest)
 	cert: null, key: null, passphrase: null,
 	// additional options to be passed into `tls.createServer`
 	tlsOpt: {},
+	// verify the ALPN ID requested by the client
+	// see https://de.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation
+	verifyAlpnId: alpnId => alpnId ? alpnId === ALPN_ID : true,
 }
 ```
 
@@ -139,6 +142,9 @@ request(pathOrUrl, opt = {}, cb)
 	connectTimeout: 60 * 1000, // 60s
 	// additional options to be passed into `tls.connect`
 	tlsOpt: {},
+	// verify the ALPN ID chosen by the server
+	// see https://de.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation
+	verifyAlpnId: alpnId => alpnId ? (alpnId === ALPN_ID) : true,
 }
 ```
 
