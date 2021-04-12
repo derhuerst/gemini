@@ -40,7 +40,7 @@ const handleRequest = (req, res) => {
 	}
 }
 
-const server = createGeminiServer({
+const server = createServer({
 	cert: …, // certificate (+ chain)
 	key: …, // private key
 	passphrase: …, // passphrase, if the key is encrypted
