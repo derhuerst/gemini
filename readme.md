@@ -72,7 +72,7 @@ request('/bar', (err, res) => {
 > Interactive clients for human users MUST inform users that such a session has been requested and require the user to approve generation of such a certificate. Transient certificates MUST NOT be generated automatically.
 – [Gemini spec](https://gemini.circumlunar.space/docs/spec-spec.txt), section 1.4.3
 
-If is up to you how to implement that approval process. As an example, we're going to build a simple CLI prompt:
+This library leaves it up to *you* how to ask the user for approval. As an example, we're going to build a simple CLI prompt:
 
 ```js
 const {createInterface} = require('readline')

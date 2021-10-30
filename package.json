@@ -1,7 +1,7 @@
 {
 	"name": "@derhuerst/gemini",
 	"description": "Experimental Gemini server & client.",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"main": "index.js",
 	"files": [
 		"index.js",
@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"create-cert": "^1.0.6",
-		"eslint": "^7.21.0",
+		"eslint": "^8.1.0",
 		"get-stream": "^6.0.0"
 	},
 	"scripts": {
