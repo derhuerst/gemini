@@ -178,7 +178,10 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		hostname: target.hostname || 'localhost',
 		port: target.port || DEFAULT_PORT,
 		connectTimeout,
-		tlsOpt,
+		tlsOpt: {
+			...tlsOpt,
+			servername: target.hostname
+		},
 	}
 
 	if (verifyAlpnId) reqOpt.verifyAlpnId = verifyAlpnId
