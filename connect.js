@@ -33,6 +33,7 @@ const connectToGeminiServer = (opt, cb) => {
 		ALPNProtocols: [ALPN_ID],
 		minVersion: MIN_TLS_VERSION,
 		host: hostname,
+		servername: hostname,
 		port,
 		cert, key, passphrase,
 		...tlsOpt,
