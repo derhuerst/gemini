@@ -49,7 +49,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		const reportTimeout = () => {
 			socket.destroy(new Error('timeout waiting for header'))
 		}
-		let timeout = setTimeout(reportTimeout, 20 * 1000)
+		let timeout = setTimeout(reportTimeout, opt.connectTimeout * 1000)
 
 		res.once('header', (header) => {
 			clearTimeout(timeout)
