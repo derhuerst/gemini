@@ -24,6 +24,7 @@ const connectToGeminiServer = (opt, cb) => {
 		hostname: '127.0.0.1',
 		port: DEFAULT_PORT,
 		cert: null, key: null, passphrase: null,
+		// todo [breaking]: reduce to e.g. 20s
 		connectTimeout: 60 * 1000, // 60s
 		tlsOpt: {},
 		...opt,

@@ -140,6 +140,8 @@ request(pathOrUrl, opt = {}, cb)
 	clientCertStore: defaultClientCertStore,
 	// time to wait for socket connection & TLS handshake
 	connectTimeout: 60 * 1000, // 60s
+	// time to wait for response headers *after* the socket is connected
+	headersTimeout: 30 * 1000, // 30s
 	// additional options to be passed into `tls.connect`
 	tlsOpt: {},
 	// verify the ALPN ID chosen by the server

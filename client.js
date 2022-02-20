@@ -19,8 +19,11 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 
 	const {
 		verifyAlpnId,
+		headersTimeout,
 	} = {
 		verifyAlpnId: alpnId => alpnId ? (alpnId === ALPN_ID) : true,
+		// time to wait for response headers *after* the socket is connected
+		headersTimeout: 30 * 1000, // 30s
 		...opt,
 	}
 
@@ -41,19 +44,28 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 				if (err) debug('error receiving response', err)
 				// Control over the socket has been given to the caller
 				// already, so we swallow the error here.
-				if (!timeout) return;
+				if (headersTimeoutTimer === null) return;
 				if (!err) cb(new Error('socket closed while waiting for header'))
 			},
 		)
 
-		const reportTimeout = () => {
-			socket.destroy(new Error('timeout waiting for header'))
+		let headersTimeoutTimer = null
+		const reportHeadersTimeout = () => {
+			clearTimeout(headersTimeoutTimer)
+			const err = new Error('timeout waiting for response headers')
+			err.timeout = headersTimeout
+			// todo: is it okay to mimic syscall errors? does ETIMEDOUT apply to protocol-level timeouts?
+			err.code = 'ETIMEDOUT'
+			err.errno = -60
+			socket.destroy(err)
 		}
-		let timeout = setTimeout(reportTimeout, 20 * 1000)
+		if (headersTimeout !== null) {
+			headersTimeoutTimer = setTimeout(reportHeadersTimeout, headersTimeout)
+		}
 
 		res.once('header', (header) => {
-			clearTimeout(timeout)
-			timeout = null
+			clearTimeout(headersTimeoutTimer)
+			headersTimeoutTimer = null
 			debug('received header', header)
 
 			// prepare res
