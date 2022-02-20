@@ -1,7 +1,7 @@
 {
 	"name": "@derhuerst/gemini",
 	"description": "Experimental Gemini server & client.",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"main": "index.js",
 	"files": [
 		"index.js",
@@ -19,7 +19,8 @@
 	],
 	"author": "Jannis R <mail@jannisr.de>",
 	"contributors": [
-		"<RangerMauve@hotmail.com>"
+		"<RangerMauve@hotmail.com>",
+		"Björn Westergard <bjornw@gmail.com>"
 	],
 	"homepage": "https://github.com/derhuerst/gemini",
 	"repository": "derhuerst/gemini",

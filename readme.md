@@ -70,7 +70,7 @@ request('/bar', (err, res) => {
 #### [TOFU](https://en.wikipedia.org/wiki/Trust_on_first_use)-style client certificates
 
 > Interactive clients for human users MUST inform users that such a session has been requested and require the user to approve generation of such a certificate. Transient certificates MUST NOT be generated automatically.
-– [Gemini spec](https://gemini.circumlunar.space/docs/spec-spec.txt), section 1.4.3
+– [Gemini spec](https://gemini.circumlunar.space/docs/spec-spec.txt), section 1.4.3
 
 This library leaves it up to *you* how to ask the user for approval. As an example, we're going to build a simple CLI prompt:
 
@@ -173,8 +173,8 @@ connect(opt = {}, cb)
 
 ## Related
 
-- [`gemini-fetch`](https://github.com/RangerMauve/gemini-fetch) – Load data from the Gemini protocol the way you would fetch from HTTP in JavaScript
-- [`dioscuri`](https://github.com/wooorm/dioscuri) – A gemtext (`text/gemini`) parser with support for streaming, ASTs, and CSTs
+- [`gemini-fetch`](https://github.com/RangerMauve/gemini-fetch) – Load data from the Gemini protocol the way you would fetch from HTTP in JavaScript
+- [`dioscuri`](https://github.com/wooorm/dioscuri) – A gemtext (`text/gemini`) parser with support for streaming, ASTs, and CSTs
 
 
 ## Contributing
