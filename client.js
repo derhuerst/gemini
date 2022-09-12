@@ -281,6 +281,11 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 			res.statusCode === CODES.TRANSIENT_CERT_REQUESTED ||
 			res.statusCode === CODES.AUTHORISED_CERT_REQUIRED
 		) {
+			if (!useClientCerts) {
+				const err = new Error('server request client cert, but client is configured not to send one')
+				err.res = res
+				return done(err)
+			}
 			const origin = reqOpt.hostname + ':' + reqOpt.port
 			letUserConfirmClientCertUsage({
 				host: origin,

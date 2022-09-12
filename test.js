@@ -69,6 +69,20 @@ const onError = (err) => {
 		try {
 			await r('/bar', {
 				...baseOpts,
+				useClientCerts: false,
+			})
+		} catch (err) {
+			strictEqual(err.message, 'server request client cert, but client is configured not to send one', 'err.message is invalid')
+			threw = true
+		}
+		if (!threw) fail(`request() didn't throw despite short timeout`)
+	}
+
+	{
+		let threw = false
+		try {
+			await r('/bar', {
+				...baseOpts,
 				headersTimeout: 100, // too short for the mock server to respond
 			})
 		} catch (err) {
