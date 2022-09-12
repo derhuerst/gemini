@@ -75,6 +75,8 @@ const connectToGeminiServer = (opt, cb) => {
 		// If timeout is 0, then the existing idle timeout is disabled.
 		// https://nodejs.org/api/net.html#net_socket_setnodelay_nodelay
 		socket.setTimeout(0)
+		clearTimeout(timeoutTimer)
+
 		cbCalled = true
 		cb(null, socket)
 	})
