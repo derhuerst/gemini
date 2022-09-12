@@ -1,6 +1,7 @@
 'use strict'
 
 const debug = require('debug')('gemini:client')
+const debugRequest = require('debug')('gemini:client:request')
 const {parse: parseUrl} = require('url')
 const pem = require('pem')
 const {pipeline: pipe} = require('stream')
@@ -15,7 +16,7 @@ const {CODES, MESSAGES} = require('./lib/statuses')
 const HOUR = 60 * 60 * 1000
 
 const _request = (pathOrUrl, opt, ctx, cb) => {
-	debug('_request', pathOrUrl, ctx, opt)
+	debugRequest('_request', pathOrUrl, ctx, opt)
 
 	const {
 		verifyAlpnId,
@@ -28,7 +29,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 
 	connect(opt, (err, socket) => {
 		if (err) return cb(err)
-		debug('connection', socket)
+		debugRequest('connection', socket)
 
 		if (verifyAlpnId(socket.alpnProtocol) !== true) {
 			socket.destroy()
@@ -41,7 +42,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 			socket,
 			res,
 			(err) => {
-				if (err) debug('error receiving response', err)
+				if (err) debugRequest('error receiving response', err)
 				// Control over the socket has been given to the caller
 				// already, so we swallow the error here.
 				if (resPassedOn) return;
@@ -94,7 +95,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		res.once('header', (header) => {
 			clearTimeout(headersTimeoutTimer)
 			headersTimeoutTimer = null
-			debug('received header', header)
+			debugRequest('received header', header)
 
 			// prepare res
 			res.socket = socket
