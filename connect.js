@@ -62,6 +62,7 @@ const connectToGeminiServer = (opt, cb) => {
 		// see also https://github.com/nodejs/node/issues/5757
 		socket.setTimeout(connectTimeout)
 		timeoutTimer = setTimeout(onTimeout, connectTimeout)
+		timeoutTimer.unref()
 	}
 
 	let cbCalled = false

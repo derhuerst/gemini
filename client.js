@@ -20,13 +20,9 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 	const {
 		verifyAlpnId,
 		headersTimeout,
-		timeout: bodyTimeout,
+		bodyTimeout,
 	} = {
 		verifyAlpnId: alpnId => alpnId ? (alpnId === ALPN_ID) : true,
-		// time to wait for response headers *after* the socket is connected
-		headersTimeout: 30 * 1000, // 30s
-		// time to wait for the first byte of the response body *after* the socket is connected
-		timeout: 40 * 1000, // 40s
 		...opt,
 	}
 
@@ -49,7 +45,12 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 				// Control over the socket has been given to the caller
 				// already, so we swallow the error here.
 				if (resPassedOn) return;
-				if (!err) cb(new Error('socket closed while waiting for header'))
+				// If control over the socket has been given to the caller already, we swallow the error here.
+				if (err) {
+					cb(err)
+				} else {
+					cb(new Error('socket closed while waiting for header'))
+				}
 			},
 		)
 
@@ -65,11 +66,14 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		}
 		if (headersTimeout !== null) {
 			headersTimeoutTimer = setTimeout(reportHeadersTimeout, headersTimeout)
+			headersTimeoutTimer.unref()
 		}
 
 		let bodyTimeoutTimer = null
 		const reportBodyTimeout = () => {
 			clearTimeout(bodyTimeoutTimer)
+			bodyTimeoutTimer = null
+
 			const err = new Error('timeout waiting for first byte of the response')
 			err.timeout = bodyTimeout
 			// todo: is it okay to mimic syscall errors? does ETIMEDOUT apply to protocol-level timeouts?
@@ -79,6 +83,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		}
 		if (bodyTimeout !== null) {
 			bodyTimeoutTimer = setTimeout(reportBodyTimeout, bodyTimeout)
+			bodyTimeoutTimer.unref()
 		}
 
 		res.once('body-first-byte', () => {
@@ -101,10 +106,12 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 			cb(null, res)
 			socket.emit('response', res)
 			resPassedOn = true
+
+			socket.once('end', () => socket.end())
 		})
 
-		// send request
-		socket.end(pathOrUrl + '\r\n')
+		// send request, but don't close the socket
+		socket.write(pathOrUrl + '\r\n')
 	})
 }
 
@@ -172,6 +179,8 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		letUserConfirmClientCertUsage,
 		clientCertStore,
 		connectTimeout,
+		headersTimeout,
+		timeout: bodyTimeout,
 		tlsOpt,
 		verifyAlpnId,
 	} = {
@@ -188,6 +197,10 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		letUserConfirmClientCertUsage: null,
 		clientCertStore: defaultClientCertStore,
 		connectTimeout: 60 * 1000, // 60s
+		// time to wait for response headers *after* the socket is connected
+		headersTimeout: 30 * 1000, // 30s
+		// time to wait for the first byte of the response body *after* the socket is connected
+		timeout: 40 * 1000, // 40s
 		tlsOpt: {},
 		...opt,
 	}
@@ -214,6 +227,8 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 		hostname: target.hostname || 'localhost',
 		port: target.port || DEFAULT_PORT,
 		connectTimeout,
+		headersTimeout,
+		bodyTimeout,
 		tlsOpt,
 	}
 

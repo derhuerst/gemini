@@ -66,6 +66,7 @@ const createGeminiServer = (opt = {}, onRequest) => {
 			socket.destroy(new Error('timeout waiting for header'))
 		}
 		let timeout = setTimeout(reportTimeout, 20 * 1000)
+		timeout.unref()
 
 		req.once('header', (header) => {
 			clearTimeout(timeout)
