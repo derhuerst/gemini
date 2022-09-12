@@ -37,6 +37,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		}
 
 		const res = createParser()
+		let resPassedOn = false
 		pipe(
 			socket,
 			res,
@@ -44,7 +45,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 				if (err) debug('error receiving response', err)
 				// Control over the socket has been given to the caller
 				// already, so we swallow the error here.
-				if (headersTimeoutTimer === null) return;
+				if (resPassedOn) return;
 				if (!err) cb(new Error('socket closed while waiting for header'))
 			},
 		)
@@ -77,6 +78,7 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 
 			cb(null, res)
 			socket.emit('response', res)
+			resPassedOn = true
 		})
 
 		// send request
