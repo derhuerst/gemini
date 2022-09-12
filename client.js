@@ -20,10 +20,13 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 	const {
 		verifyAlpnId,
 		headersTimeout,
+		timeout: bodyTimeout,
 	} = {
 		verifyAlpnId: alpnId => alpnId ? (alpnId === ALPN_ID) : true,
 		// time to wait for response headers *after* the socket is connected
 		headersTimeout: 30 * 1000, // 30s
+		// time to wait for the first byte of the response body *after* the socket is connected
+		timeout: 40 * 1000, // 40s
 		...opt,
 	}
 
@@ -63,6 +66,25 @@ const _request = (pathOrUrl, opt, ctx, cb) => {
 		if (headersTimeout !== null) {
 			headersTimeoutTimer = setTimeout(reportHeadersTimeout, headersTimeout)
 		}
+
+		let bodyTimeoutTimer = null
+		const reportBodyTimeout = () => {
+			clearTimeout(bodyTimeoutTimer)
+			const err = new Error('timeout waiting for first byte of the response')
+			err.timeout = bodyTimeout
+			// todo: is it okay to mimic syscall errors? does ETIMEDOUT apply to protocol-level timeouts?
+			err.code = 'ETIMEDOUT'
+			err.errno = -60
+			socket.destroy(err)
+		}
+		if (bodyTimeout !== null) {
+			bodyTimeoutTimer = setTimeout(reportBodyTimeout, bodyTimeout)
+		}
+
+		res.once('body-first-byte', () => {
+			clearTimeout(bodyTimeoutTimer)
+			bodyTimeoutTimer = null
+		})
 
 		res.once('header', (header) => {
 			clearTimeout(headersTimeoutTimer)

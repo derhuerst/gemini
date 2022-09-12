@@ -142,6 +142,8 @@ request(pathOrUrl, opt = {}, cb)
 	connectTimeout: 60 * 1000, // 60s
 	// time to wait for response headers *after* the socket is connected
 	headersTimeout: 30 * 1000, // 30s
+	// time to wait for the first byte of the response body *after* the socket is connected
+	timeout: 40 * 1000, // 40s
 	// additional options to be passed into `tls.connect`
 	tlsOpt: {},
 	// verify the ALPN ID chosen by the server
