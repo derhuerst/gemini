@@ -67,6 +67,7 @@ const connectToGeminiServer = (opt, cb) => {
 
 	let cbCalled = false
 	socket.once('error', (err) => {
+		debug('socket error', err)
 		if (cbCalled) return;
 		cbCalled = true
 		cb(err)
