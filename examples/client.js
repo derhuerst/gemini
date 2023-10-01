@@ -11,7 +11,6 @@ const letUserConfirmClientCertUsage = ({host, reason}, cb) => {
 	const prompt = createInterface({
 		input: process.stdin,
 		output: process.stdout,
-		history: 0,
 	})
 	prompt.question([
 		`Send client cert to ${host}?`,
