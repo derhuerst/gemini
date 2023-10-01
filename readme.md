@@ -3,7 +3,6 @@
 **[Gemini protocol](https://gemini.circumlunar.space) server & client.**
 
 [![npm version](https://img.shields.io/npm/v/@derhuerst/gemini.svg)](https://www.npmjs.com/package/@derhuerst/gemini)
-[![build status](https://api.travis-ci.org/derhuerst/gemini.svg?branch=master)](https://travis-ci.org/derhuerst/gemini)
 ![ISC-licensed](https://img.shields.io/github/license/derhuerst/gemini.svg)
 ![minimum Node.js version](https://img.shields.io/node/v/@derhuerst/gemini.svg)
 [![support me via GitHub Sponsors](https://img.shields.io/badge/support%20me-donate-fa7664.svg)](https://github.com/sponsors/derhuerst)
