@@ -1,10 +1,8 @@
-'use strict'
-
-const createCert = require('create-cert')
-const {
-	createServer: createGeminiServer,
+import createCert from 'create-cert'
+import {
+	createServer,
 	DEFAULT_PORT,
-} = require('..')
+} from '../index.js'
 
 const onRequest = (req, res) => {
 	console.log('request', req.url)
@@ -23,23 +21,20 @@ const onRequest = (req, res) => {
 	}
 }
 
-const onError = (err) => {
-	console.error(err)
-	process.exit(1)
-}
+const keys = await createCert('example.org')
 
-createCert('example.org')
-.then((keys) => {
-	const server = createGeminiServer({
-		tlsOpt: keys,
-		// todo: SNICallback
-	}, onRequest)
-	server.on('error', console.error)
+const server = createServer({
+	tlsOpt: keys,
+	// todo: SNICallback
+}, onRequest)
+server.on('error', console.error)
 
-	server.listen(DEFAULT_PORT, (err) => {
-		if (err) return onError(err)
-		const {address, port} = server.address()
-		console.info(`listening on ${address}:${port}`)
-	})
+server.listen(DEFAULT_PORT, (err) => {
+	if (err) {
+		console.error(err)
+		process.exit(1)
+	}
+
+	const {address, port} = server.address()
+	console.info(`listening on ${address}:${port}`)
 })
-.catch(onError)

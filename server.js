@@ -1,15 +1,15 @@
-'use strict'
-
-const debug = require('debug')('gemini:server')
-const {createServer: createTlsServer} = require('tls')
-const {EventEmitter} = require('events')
-const {pipeline: pipe} = require('stream')
-const createParser = require('./lib/request-parser')
-const createResponse = require('./lib/response')
-const {
+import createDebug from 'debug'
+import {createServer as createTlsServer} from 'node:tls'
+import {EventEmitter} from 'node:events'
+import {pipeline as pipe} from 'node:stream'
+import {createRequestParser as createParser} from './lib/request-parser.js'
+import {createResponse} from './lib/response.js'
+import {
 	ALPN_ID,
 	MIN_TLS_VERSION,
-} = require('./lib/util')
+} from './lib/util.js'
+
+const debug = createDebug('gemini:server')
 
 const createGeminiServer = (opt = {}, onRequest) => {
 	if (typeof opt === 'function') {
@@ -132,4 +132,6 @@ const createGeminiServer = (opt = {}, onRequest) => {
 	return server
 }
 
-module.exports = createGeminiServer
+export {
+	createGeminiServer,
+}

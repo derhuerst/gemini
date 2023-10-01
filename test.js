@@ -1,16 +1,14 @@
-'use strict'
-
-const createCert = require('create-cert')
-const {promisify: pify} = require('util')
-const {strictEqual, fail} = require('assert')
-const collect = require('get-stream')
-const {
+import createCert from 'create-cert'
+import {promisify} from 'node:util'
+import {strictEqual, fail} from 'node:assert'
+import collect from 'get-stream'
+import {
 	createServer,
 	DEFAULT_PORT,
 	request,
-} = require('.')
+} from './index.js'
 
-const r = pify(request)
+const r = promisify(request)
 
 const onRequest = (req, res) => {
 	console.log('request', req.url)
@@ -38,13 +36,13 @@ const onError = (err) => {
 	process.exit(1)
 }
 
-;(async () => {
+{
 	const server = createServer({
 		tlsOpt: await createCert('example.org'),
 	}, onRequest)
 
 	server.on('error', onError)
-	await pify(server.listen.bind(server))(DEFAULT_PORT)
+	await promisify(server.listen.bind(server))(DEFAULT_PORT)
 
 	const res1 = await r('/bar', {
 		tlsOpt: {rejectUnauthorized: false},
@@ -63,7 +61,7 @@ const onError = (err) => {
 	})
 	strictEqual(res2.statusCode, 20)
 	strictEqual(await collect(res2), 'foo!')
-
+	
 	{
 		let threw = false
 		try {
@@ -107,7 +105,6 @@ const onError = (err) => {
 		}
 		if (!threw) fail(`request() didn't throw despite short timeout`)
 	}
-
+	
 	server.close()
-})()
-.catch(onError)
+}

@@ -1,12 +1,12 @@
-'use strict'
-
-const debug = require('debug')('gemini:connect')
-const {connect: connectTls} = require('tls')
-const {
+import createDebug from 'debug'
+import {connect as connectTls} from 'node:tls'
+import {
 	DEFAULT_PORT,
 	ALPN_ID,
 	MIN_TLS_VERSION,
-} = require('./lib/util')
+} from './lib/util.js'
+
+const debug = createDebug('gemini:connect')
 
 const connectToGeminiServer = (opt, cb) => {
 	if (typeof opt === 'function') {
@@ -86,4 +86,6 @@ const connectToGeminiServer = (opt, cb) => {
 	return socket
 }
 
-module.exports = connectToGeminiServer
+export {
+	connectToGeminiServer,
+}

@@ -1,17 +1,17 @@
-'use strict'
-
-const debug = require('debug')('gemini:client')
-const debugRequest = require('debug')('gemini:client:request')
-const {parse: parseUrl} = require('url')
-const pem = require('pem')
-const {pipeline: pipe} = require('stream')
-const connect = require('./connect')
-const createParser = require('./lib/response-parser')
-const {
+import createDebug from 'debug'
+import {parse as parseUrl} from 'node:url'
+import pem from 'pem'
+import {pipeline as pipe} from 'node:stream'
+import {connectToGeminiServer as connect} from './connect.js'
+import {createResponseParser as createParser} from './lib/response-parser.js'
+import {
 	DEFAULT_PORT,
 	ALPN_ID,
-} = require('./lib/util')
-const {CODES, MESSAGES} = require('./lib/statuses')
+} from './lib/util.js'
+import {CODES, MESSAGES} from './lib/statuses.js'
+
+const debug = createDebug('gemini:client')
+const debugRequest = createDebug('gemini:client:request')
 
 const HOUR = 60 * 60 * 1000
 
@@ -315,4 +315,6 @@ const sendGeminiRequest = (pathOrUrl, opt, done) => {
 	_request(pathOrUrl, reqOpt, ctx, cb)
 }
 
-module.exports = sendGeminiRequest
+export {
+	sendGeminiRequest,
+}

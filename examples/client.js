@@ -1,7 +1,5 @@
-'use strict'
-
-const {createInterface} = require('readline')
-const {request} = require('..')
+import {createInterface} from 'readline'
+import {request} from '../index.js'
 
 // https://gemini.circumlunar.space/docs/spec-spec.txt, 1.4.3
 // > Interactive clients for human users MUST inform users that such a session
@@ -22,11 +20,6 @@ const letUserConfirmClientCertUsage = ({host, reason}, cb) => {
 	})
 }
 
-const onError = (err) => {
-	console.error(err)
-	process.exit(1)
-}
-
 request('/bar', {
 	followRedirects: true,
 	useClientCerts: true, letUserConfirmClientCertUsage,
@@ -34,7 +27,10 @@ request('/bar', {
 		rejectUnauthorized: false,
 	},
 }, (err, res) => {
-	if (err) return onError(err)
+	if (err) {
+		console.error(err)
+		process.exit(1)
+	}
 
 	console.log(res.statusCode, res.statusMessage)
 	if (res.meta) console.log(res.meta)

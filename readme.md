@@ -23,7 +23,7 @@ npm install @derhuerst/gemini
 The following code assumes that you have a valid SSL certificate & key.
 
 ```js
-const {createServer, DEFAULT_PORT} = require('@derhuerst/gemini')
+import {createServer, DEFAULT_PORT} from '@derhuerst/gemini'
 
 const handleRequest = (req, res) => {
 	if (req.path === '/foo') {
@@ -52,7 +52,7 @@ server.on('error', console.error)
 ### Client
 
 ```js
-const request = require('@derhuerst/gemini/client')
+import {sendGeminiRequest as request} from '@derhuerst/gemini/client.js'
 
 request('/bar', (err, res) => {
 	if (err) {
@@ -74,7 +74,7 @@ request('/bar', (err, res) => {
 This library leaves it up to *you* how to ask the user for approval. As an example, we're going to build a simple CLI prompt:
 
 ```js
-const {createInterface} = require('readline')
+import {createInterface} from 'node:readline'
 
 const letUserConfirmClientCertUsage = ({host, reason}, cb) => {
 	const prompt = createInterface({
@@ -100,7 +100,7 @@ request('/foo', {
 ### `createServer`
 
 ```js
-const createServer = require('@derhuerst/gemini/server')
+import {createGeminiServer as createServer} from '@derhuerst/gemini/server.js'
 createServer(opt = {}, onRequest)
 ```
 
@@ -121,7 +121,7 @@ createServer(opt = {}, onRequest)
 ### `request`
 
 ```js
-const request = require('@derhuerst/gemini/client')
+import {sendGeminiRequest as request} from '@derhuerst/gemini/client.js'
 request(pathOrUrl, opt = {}, cb)
 ```
 
@@ -153,7 +153,7 @@ request(pathOrUrl, opt = {}, cb)
 ### `connect`
 
 ```js
-const connect = require('@derhuerst/gemini/connect')
+import {connectToGeminiServer as connect} from '@derhuerst/gemini/connect.js'
 connect(opt = {}, cb)
 ```
 
