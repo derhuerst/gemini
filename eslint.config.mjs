@@ -9,7 +9,14 @@ export default [
 			globals: globals.node,
 		},
 		rules: {
-			'no-unused-vars': 'off',
+			'no-unused-vars': [
+				'error',
+				{
+					vars: 'all',
+					args: 'none',
+					ignoreRestSiblings: false
+				},
+			],
 		},
 	},
 ]

@@ -1,6 +1,5 @@
 import createDebug from 'debug'
 import {createServer as createTlsServer} from 'node:tls'
-import {EventEmitter} from 'node:events'
 import {pipeline as pipe} from 'node:stream'
 import {createRequestParser as createParser} from './lib/request-parser.js'
 import {createResponse} from './lib/response.js'
