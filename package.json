@@ -36,8 +36,7 @@
 	},
 	"devDependencies": {
 		"create-cert": "^1.0.6",
-		"eslint": "^8.1.0",
-		"get-stream": "^8.0.1"
+		"eslint": "^8.1.0"
 	},
 	"scripts": {
 		"lint": "eslint .",

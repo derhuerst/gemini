@@ -1,7 +1,6 @@
 import createCert from 'create-cert'
 import {promisify} from 'node:util'
 import {strictEqual, fail} from 'node:assert'
-import collect from 'get-stream'
 import {
 	createServer,
 	DEFAULT_PORT,
@@ -9,6 +8,10 @@ import {
 } from './index.js'
 
 const r = promisify(request)
+
+const readIntoString = async (readableStream) => {
+	return Buffer.concat(await readableStream.toArray()).toString('utf8')
+}
 
 const onRequest = (req, res) => {
 	console.log('request', req.url)
@@ -60,7 +63,7 @@ const onError = (err) => {
 		...baseOpts,
 	})
 	strictEqual(res2.statusCode, 20)
-	strictEqual(await collect(res2), 'foo!')
+	strictEqual(await readIntoString(res2), 'foo!')
 	
 	{
 		let threw = false
