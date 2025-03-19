@@ -1,12 +1,16 @@
 # gemini
 
-**[Gemini protocol](https://gemini.circumlunar.space) server & client.**
+**[Gemini protocol](https://geminiprotocol.net/) server & client.**
 
 [![npm version](https://img.shields.io/npm/v/@derhuerst/gemini.svg)](https://www.npmjs.com/package/@derhuerst/gemini)
 ![ISC-licensed](https://img.shields.io/github/license/derhuerst/gemini.svg)
 ![minimum Node.js version](https://img.shields.io/node/v/@derhuerst/gemini.svg)
 [![support me via GitHub Sponsors](https://img.shields.io/badge/support%20me-donate-fa7664.svg)](https://github.com/sponsors/derhuerst)
 [![chat with me on Twitter](https://img.shields.io/badge/chat%20with%20me-on%20Twitter-1da1f2.svg)](https://twitter.com/derhuerst)
+
+> [!IMPORTANT]
+>
+> This package implements the Gemini specification as of end of 2022.
 
 
 ## Installation
